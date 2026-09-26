@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickKart — Groceries in Minutes</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f7f8fa;color:#171717}
+header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #eee}
+.nav{max-width:1200px;margin:auto;padding:14px 20px;display:flex;align-items:center;gap:20px}
+.logo{font-size:27px;font-weight:900;color:#0b8f3c}.logo span{color:#171717}
+.location{font-size:13px;color:#666;line-height:1.2}.location b{color:#111;font-size:14px}
+.search{flex:1;display:flex;background:#f2f3f5;border-radius:12px;padding:0 14px;align-items:center}
+.search input{width:100%;border:0;background:transparent;padding:13px 8px;outline:0;font-size:15px}
+.cartBtn{border:0;background:#0b8f3c;color:#fff;border-radius:11px;padding:12px 16px;font-weight:800;cursor:pointer}
+.hero{max-width:1200px;margin:20px auto;padding:0 20px}
+.banner{background:linear-gradient(110deg,#dff8e8,#f5fff8);border-radius:20px;padding:35px;display:flex;justify-content:space-between;align-items:center;overflow:hidden}
+.banner h1{font-size:42px;margin:0 0 10px}.banner p{font-size:18px;color:#555}.badge{display:inline-block;background:#0b8f3c;color:#fff;padding:8px 12px;border-radius:20px;font-weight:700}
+.bannerArt{font-size:100px}
+.wrap{max-width:1200px;margin:25px auto;padding:0 20px}.sectionTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sectionTitle h2{margin:0}.categories{display:flex;gap:14px;overflow:auto;padding-bottom:8px}
+.cat{min-width:105px;background:#fff;border:1px solid #eee;border-radius:15px;padding:13px;text-align:center;cursor:pointer}.cat:hover{border-color:#0b8f3c}
+.cat .emoji{font-size:32px}.cat div:last-child{font-weight:700;font-size:13px;margin-top:7px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:15px}
+.card{background:#fff;border:1px solid #eee;border-radius:16px;padding:12px;position:relative}
+.pic{height:145px;background:#f6f7f8;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:75px}
+.card h3{font-size:15px;margin:10px 0 5px}.meta{color:#777;font-size:12px}.price{font-weight:900;margin-top:8px}.add{float:right;margin-top:-28px;border:1px solid #0b8f3c;color:#0b8f3c;background:#fff;border-radius:8px;padding:6px 13px;font-weight:800;cursor:pointer}
+.add:hover{background:#0b8f3c;color:white}
+footer{margin-top:50px;background:#171717;color:#ddd;padding:30px;text-align:center}
+#drawer{position:fixed;right:-420px;top:0;width:390px;max-width:92%;height:100vh;background:#fff;z-index:30;box-shadow:-10px 0 35px #0002;padding:22px;transition:.25s;overflow:auto}
+#drawer.open{right:0}.close{float:right;border:0;background:#eee;border-radius:50%;width:32px;height:32px;cursor:pointer}
+.cartItem{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #eee;align-items:center}.cartItem .e{font-size:35px}.qty button{border:1px solid #ddd;background:#fff;border-radius:6px;padding:4px 9px;cursor:pointer}
+.checkout{width:100%;border:0;background:#0b8f3c;color:#fff;padding:14px;border-radius:10px;font-weight:800;font-size:16px;cursor:pointer}
+.empty{text-align:center;color:#777;padding:50px 0}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}.location{display:none}}
+@media(max-width:600px){.nav{gap:9px;padding:10px}.logo{font-size:21px}.banner{padding:22px}.banner h1{font-size:29px}.bannerArt{font-size:65px}.grid{grid-template-columns:repeat(2,1fr)}.pic{height:125px}.wrap,.hero{padding:0 12px}.search input{font-size:13px}}
+</style>
+</head>
+<body>
+<header><div class="nav">
+<div class="logo">Quick<span>Kart</span></div>
+<div class="location">Deliver to<br><b>Patna, Bihar</b></div>
+<div class="search">🔎 <input id="search" placeholder="Search for groceries, snacks, drinks..." oninput="render()"></div>
+<button class="cartBtn" onclick="toggleCart()">🛒 Cart <span id="count">0</span></button>
+</div></header>
+
+<section class="hero"><div class="banner">
+<div><span class="badge">⚡ 10–20 min delivery</span><h1>Groceries at your door.</h1><p>Fresh essentials, snacks & daily needs delivered fast.</p></div><div class="bannerArt">🛵🛍️</div>
+</div></section>
+
+<section class="wrap">
+<div class="sectionTitle"><h2>Shop by category</h2></div>
+<div class="categories">
+<div class="cat" onclick="setCat('All')"><div class="emoji">🛒</div><div>All</div></div>
+<div class="cat" onclick="setCat('Fruits')"><div class="emoji">🍎</div><div>Fruits</div></div>
+<div class="cat" onclick="setCat('Dairy')"><div class="emoji">🥛</div><div>Dairy</div></div>
+<div class="cat" onclick="setCat('Snacks')"><div class="emoji">🍪</div><div>Snacks</div></div>
+<div class="cat" onclick="setCat('Drinks')"><div class="emoji">🥤</div><div>Drinks</div></div>
+<div class="cat" onclick="setCat('Staples')"><div class="emoji">🌾</div><div>Staples</div></div>
+</div>
+</section>
+
+<section class="wrap"><div class="sectionTitle"><h2>Popular products</h2><small id="result"></small></div><div class="grid" id="products"></div></section>
+<footer>© 2026 QuickKart · Fast delivery for everyday essentials</footer>
+
+<aside id="drawer"><button class="close" onclick="toggleCart()">✕</button><h2>Your Cart</h2><div id="cart"></div><div id="total"></div></aside>
+
+<script>
+const products=[
+{id:1,name:"Fresh Bananas",cat:"Fruits",price:45,unit:"1 kg",e:"🍌"},
+{id:2,name:"Red Apples",cat:"Fruits",price:129,unit:"1 kg",e:"🍎"},
+{id:3,name:"Full Cream Milk",cat:"Dairy",price:68,unit:"1 L",e:"🥛"},
+{id:4,name:"Fresh Curd",cat:"Dairy",price:45,unit:"400 g",e:"🥣"},
+{id:5,name:"Potato Chips",cat:"Snacks",price:30,unit:"90 g",e:"🥔"},
+{id:6,name:"Chocolate Cookies",cat:"Snacks",price:55,unit:"120 g",e:"🍪"},
+{id:7,name:"Cold Drink",cat:"Drinks",price:45,unit:"750 ml",e:"🥤"},
+{id:8,name:"Orange Juice",cat:"Drinks",price:99,unit:"1 L",e:"🧃"},
+{id:9,name:"Basmati Rice",cat:"Staples",price:299,unit:"5 kg",e:"🍚"},
+{id:10,name:"Wheat Atta",cat:"Staples",price:249,unit:"5 kg",e:"🌾"}
+];
+let cart={},cat="All";
+function setCat(c){cat=c;render()}
+function render(){
+ let q=document.getElementById("search").value.toLowerCase();
+ let list=products.filter(p=>(cat==="All"||p.cat===cat)&&p.name.toLowerCase().includes(q));
+ document.getElementById("result").textContent=list.length+" items";
+ document.getElementById("products").innerHTML=list.map(p=>`<div class="card"><div class="pic">${p.e}</div><h3>${p.name}</h3><div class="meta">${p.unit} · ${p.cat}</div><div class="price">₹${p.price}</div><button class="add" onclick="add(${p.id})">${cart[p.id]?'+' :'ADD'}</button></div>`).join("");
+}
+function add(id){cart[id]=(cart[id]||0)+1;update();render()}
+function change(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];update()}
+function update(){
+ let n=Object.values(cart).reduce((a,b)=>a+b,0);document.getElementById("count").textContent=n;
+ let keys=Object.keys(cart);
+ if(!keys.length){document.getElementById("cart").innerHTML='<div class="empty">Your cart is empty 🛒</div>';document.getElementById("total").innerHTML='';return}
+ let total=keys.reduce((s,id)=>s+products.find(p=>p.id==id).price*cart[id],0);
+ document.getElementById("cart").innerHTML=keys.map(id=>{let p=products.find(x=>x.id==id);return `<div class="cartItem"><div class="e">${p.e}</div><div style="flex:1"><b>${p.name}</b><div>₹${p.price} × ${cart[id]}</div><div class="qty"><button onclick="change(${id},-1)">−</button> ${cart[id]} <button onclick="change(${id},1)">+</button></div></div></div>`}).join("");
+ document.getElementById("total").innerHTML=`<h3>Total: ₹${total}</h3><button class="checkout" onclick="alert('Demo checkout — connect your payment gateway here!')">Proceed to Checkout</button>`;
+}
+function toggleCart(){document.getElementById("drawer").classList.toggle("open");update()}
+render();update();
+</script>
+</body>
+</html>
